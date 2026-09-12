@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  username  String?    @unique
+  name      String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  campaigns Campaign[]
+
+  @@map("users")
+}
+
+model Campaign {
+  id          String     @id @default(cuid())
+  userId      String?
+  user        User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sender      String     @default("jeffdev2701@gmail.com")
+  recipients  String     // Comma-separated or JSON list of recipient emails
+  subject     String
+  contentHtml String     @db.Text
+  isAutoSend  Boolean    @default(false)
+  scheduledAt DateTime?
+  status      String     @default("DRAFT") // DRAFT, SCHEDULED, SENDING, SENT, FAILED
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  logs        EmailLog[]
+
+  @@map("campaigns")
+}
+
+model EmailLog {
+  id           String    @id @default(cuid())
+  campaignId   String?
+  campaign     Campaign? @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  sender       String
+  recipient    String
+  subject      String
+  status       String    @default("SENT") // SENT, FAILED, SCHEDULED, QUEUED
+  resendId     String?
+  errorMessage String?   @db.Text
+  sentAt       DateTime  @default(now())
+
+  @@map("email_logs")
+}
+
+model EmailAsset {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String
+  fileSize  Int?
+  mimeType  String?
+  createdAt DateTime @default(now())
+
+  @@map("email_assets")
+}
