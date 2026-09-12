@@ -1,29 +1,41 @@
 import { NextResponse } from "next/server";
-import { prisma, isPrismaConfigured } from "@/lib/prisma";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export async function GET() {
-  if (isPrismaConfigured) {
+  if (isSupabaseConfigured) {
     try {
-      const campaigns = await prisma.campaign.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 20,
-      });
+      const { data: campaigns, error } = await supabase
+        .from("campaigns")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(20);
 
-      const formatted = campaigns.map((c) => ({
-        id: c.id,
-        sender: c.sender,
-        recipients: c.recipients.split(",").map((r) => r.trim()),
-        subject: c.subject,
-        contentHtml: c.contentHtml,
-        isAutoSend: c.isAutoSend,
-        scheduledAt: c.scheduledAt ? c.scheduledAt.toISOString() : undefined,
-        status: c.status as "SENT" | "SCHEDULED" | "SENDING" | "FAILED",
-        createdAt: c.createdAt.toISOString(),
-      }));
+      if (error) {
+        throw error;
+      }
 
-      return NextResponse.json({ success: true, campaigns: formatted });
+      if (campaigns && campaigns.length > 0) {
+        const formatted = campaigns.map((c) => ({
+          id: c.id,
+          sender: c.sender,
+          recipients:
+            typeof c.recipients === "string"
+              ? c.recipients.split(",").map((r: string) => r.trim())
+              : Array.isArray(c.recipients)
+              ? c.recipients
+              : [],
+          subject: c.subject,
+          contentHtml: c.content_html,
+          isAutoSend: Boolean(c.is_auto_send),
+          scheduledAt: c.scheduled_at ? new Date(c.scheduled_at).toISOString() : undefined,
+          status: c.status as "SENT" | "SCHEDULED" | "SENDING" | "FAILED",
+          createdAt: c.created_at ? new Date(c.created_at).toISOString() : new Date().toISOString(),
+        }));
+
+        return NextResponse.json({ success: true, campaigns: formatted });
+      }
     } catch (err) {
-      console.warn("Prisma fetch failed, using fallback:", err);
+      console.warn("Supabase fetch failed, using fallback:", err);
     }
   }
 

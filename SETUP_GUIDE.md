@@ -1,6 +1,6 @@
 # 📧 Email Automation & Bulk Sender Web App - Setup & User Guide
 
-Welcome to the **Email Automation & Bulk Sender** application. This project is built with **Next.js 15 (App Router, TypeScript)**, **Prisma ORM**, **Supabase** (Auth, Database & Storage), and **Resend** (Email Delivery), featuring automated timely scheduling, bulk email processing, image embedding, field-locking safety controls, and a modern dashboard.
+Welcome to the **Email Automation & Bulk Sender** application. This project is built with **Next.js 15 (App Router, TypeScript)**, **Supabase** (Auth, Database & Storage), and **Resend** (Email Delivery), featuring automated timely scheduling, bulk email processing, image embedding, field-locking safety controls, and a modern dashboard.
 
 ---
 
@@ -46,22 +46,7 @@ To send real emails to inboxes and store persistent data in your own cloud datab
      - Row Level Security (RLS) policies
      - Public `email-assets` Storage Bucket for hosted email images.
 
-### 2. Prisma ORM Database Connection
-
-1. In your Supabase Project Settings:
-   - Go to **Project Settings -> Database -> Connection string**.
-   - Select **URI** mode.
-   - Copy the PostgreSQL connection URI and set it as `DATABASE_URL` in `.env.local`:
-     ```env
-     DATABASE_URL="postgresql://postgres.[your-project-ref]:[YOUR-PASSWORD]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
-     ```
-2. Generate the Prisma Client and sync models:
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
-
-### 3. Resend API Setup (Email Delivery)
+### 2. Resend API Setup (Email Delivery)
 
 1. Go to [https://resend.com](https://resend.com) and create a free account.
 2. Go to **API Keys** -> **Create API Key**.
@@ -112,8 +97,6 @@ To send real emails to inboxes and store persistent data in your own cloud datab
 
 ```
 EmailAutomation/
-├── prisma/
-│   └── schema.prisma         # Prisma data models (User, Campaign, EmailLog, EmailAsset)
 ├── src/
 │   ├── app/
 │   │   ├── api/
@@ -132,7 +115,6 @@ EmailAutomation/
 │   │   ├── ImageModal.tsx    # Image upload & link insertion modal
 │   │   └── Navbar.tsx        # Header with status pills, demo badge & user profile
 │   ├── lib/
-│   │   ├── prisma.ts         # Prisma client singleton
 │   │   ├── resend.ts         # Resend SDK helper & mock fallback
 │   │   └── supabase.ts       # Supabase client singleton & auth helpers
 │   └── styles/

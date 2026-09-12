@@ -1,44 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendBulkEmails } from "@/lib/resend";
-import { prisma, isPrismaConfigured } from "@/lib/prisma";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
     const { campaignId, action } = await req.json();
 
     if (action === "TRIGGER_DISPATCH") {
-      // If Prisma is configured, find campaign in DB
+      // If Supabase is configured, find campaign in DB
       let campaign = null;
-      if (isPrismaConfigured && campaignId) {
+      if (isSupabaseConfigured && campaignId) {
         try {
-          campaign = await prisma.campaign.findUnique({
-            where: { id: campaignId },
-          });
+          const { data, error } = await supabase
+            .from("campaigns")
+            .select("*")
+            .eq("id", campaignId)
+            .single();
+
+          if (!error && data) {
+            campaign = data;
+          }
         } catch {
           // ignore
         }
       }
 
       if (campaign) {
-        const recipientsList = campaign.recipients
+        const recipientsList = (campaign.recipients || "")
           .split(/[\n,;]+/)
-          .map((e) => e.trim())
+          .map((e: string) => e.trim())
           .filter(Boolean);
 
         const result = await sendBulkEmails({
           from: campaign.sender,
           to: recipientsList,
           subject: campaign.subject,
-          html: campaign.contentHtml,
+          html: campaign.content_html || campaign.contentHtml,
         });
 
-        if (isPrismaConfigured) {
-          await prisma.campaign.update({
-            where: { id: campaignId },
-            data: {
+        if (isSupabaseConfigured) {
+          await supabase
+            .from("campaigns")
+            .update({
               status: result.success ? "SENT" : "FAILED",
-            },
-          });
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", campaignId);
         }
 
         return NextResponse.json({

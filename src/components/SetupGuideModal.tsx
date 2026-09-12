@@ -24,7 +24,6 @@ export const SetupGuideModal: React.FC<SetupGuideModalProps> = ({ isOpen, onClos
   const envTemplate = `NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
-DATABASE_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
 RESEND_API_KEY=re_your_api_key_here
 NEXT_PUBLIC_DEFAULT_SENDER_EMAIL=jeffdev2701@gmail.com`;
 
@@ -66,7 +65,7 @@ NEXT_PUBLIC_DEFAULT_SENDER_EMAIL=jeffdev2701@gmail.com`;
                 API Keys & Setup Guidance
               </h3>
               <p style={{ fontSize: "0.8125rem", color: "var(--text-muted)" }}>
-                Step-by-step instructions for Supabase, Prisma & Resend
+                Step-by-step instructions for Supabase & Resend
               </p>
             </div>
           </div>
@@ -119,20 +118,7 @@ NEXT_PUBLIC_DEFAULT_SENDER_EMAIL=jeffdev2701@gmail.com`;
           <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
             1. Create a project at <strong>supabase.com</strong>.<br />
             2. In <strong>Project Settings &gt; API</strong>, copy your <code>Project URL</code> and <code>anon public key</code> into <code>.env.local</code>.<br />
-            3. In Supabase <strong>SQL Editor</strong>, run the contents of <code>supabase_schema.sql</code> (creates tables, RLS policies, and the <code>email-assets</code> storage bucket).
-          </p>
-        </div>
-
-        {/* Step 3: Prisma Connection */}
-        <div style={{ marginBottom: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-            <Database size={16} color="var(--accent-primary)" />
-            <h4 style={{ fontSize: "0.9375rem", fontWeight: 700 }}>3. Prisma ORM Database Sync</h4>
-          </div>
-          <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-            1. In Supabase <strong>Database Settings</strong>, copy the PostgreSQL URI.<br />
-            2. Paste into <code>DATABASE_URL</code> in <code>.env.local</code>.<br />
-            3. Run <code>npx prisma generate</code> and <code>npx prisma db push</code> to sync models.
+            3. In Supabase <strong>SQL Editor</strong>, run the contents of <code>supabase_schema.sql</code> (creates the <code>campaigns</code>, <code>email_logs</code>, and <code>email_assets</code> tables with RLS and public storage).
           </p>
         </div>
 

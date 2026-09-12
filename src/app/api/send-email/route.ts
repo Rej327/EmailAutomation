@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendBulkEmails, isResendConfigured } from "@/lib/resend";
-import { prisma, isPrismaConfigured } from "@/lib/prisma";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,21 +28,37 @@ export async function POST(req: NextRequest) {
     if (isFutureScheduled) {
       // Save as SCHEDULED campaign
       let campaignRecord = null;
-      if (isPrismaConfigured) {
+      if (isSupabaseConfigured) {
         try {
-          campaignRecord = await prisma.campaign.create({
-            data: {
+          const { data, error } = await supabase
+            .from("campaigns")
+            .insert({
               sender,
               recipients: recipients.join(", "),
               subject,
-              contentHtml,
-              isAutoSend: true,
-              scheduledAt: new Date(scheduledAt),
+              content_html: contentHtml,
+              is_auto_send: true,
+              scheduled_at: new Date(scheduledAt).toISOString(),
               status: "SCHEDULED",
-            },
-          });
+            })
+            .select()
+            .single();
+
+          if (!error && data) {
+            campaignRecord = {
+              id: data.id,
+              sender: data.sender,
+              recipients,
+              subject: data.subject,
+              contentHtml: data.content_html,
+              isAutoSend: Boolean(data.is_auto_send),
+              scheduledAt: data.scheduled_at,
+              status: data.status,
+              createdAt: data.created_at,
+            };
+          }
         } catch (dbErr) {
-          console.warn("Prisma save failed, using fallback:", dbErr);
+          console.warn("Supabase save failed, using fallback:", dbErr);
         }
       }
 
@@ -79,31 +95,50 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Save to Database if Prisma is connected
+    // Save to Database if Supabase is connected
     let savedCampaign = null;
-    if (isPrismaConfigured) {
+    if (isSupabaseConfigured) {
       try {
-        savedCampaign = await prisma.campaign.create({
-          data: {
+        const { data: campaignRow, error: campErr } = await supabase
+          .from("campaigns")
+          .insert({
             sender,
             recipients: recipients.join(", "),
             subject,
-            contentHtml,
-            isAutoSend: Boolean(isAutoSend),
+            content_html: contentHtml,
+            is_auto_send: Boolean(isAutoSend),
             status: "SENT",
-            logs: {
-              create: recipients.map((email: string) => ({
-                sender,
-                recipient: email,
-                subject,
-                status: "SENT",
-                resendId: result.mockId || undefined,
-              })),
-            },
-          },
-        });
+          })
+          .select()
+          .single();
+
+        if (!campErr && campaignRow) {
+          savedCampaign = {
+            id: campaignRow.id,
+            sender: campaignRow.sender,
+            recipients,
+            subject: campaignRow.subject,
+            contentHtml: campaignRow.content_html,
+            isAutoSend: Boolean(campaignRow.is_auto_send),
+            status: campaignRow.status,
+            sentAt: new Date().toISOString(),
+            createdAt: campaignRow.created_at,
+          };
+
+          // Also insert individual logs into email_logs
+          const logsToInsert = recipients.map((email: string) => ({
+            campaign_id: campaignRow.id,
+            sender,
+            recipient: email,
+            subject,
+            status: "SENT",
+            resend_id: result.mockId || null,
+          }));
+
+          await supabase.from("email_logs").insert(logsToInsert);
+        }
       } catch (dbErr) {
-        console.warn("Prisma campaign log error:", dbErr);
+        console.warn("Supabase campaign log error:", dbErr);
       }
     }
 

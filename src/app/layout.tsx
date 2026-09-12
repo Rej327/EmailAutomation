@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: "AutoMail Flow - Automated Bulk Email Dispatcher & Scheduler",
   description:
-    "Enterprise-grade email automation, bulk recipient scheduler, image embedder, and lockable safety controls powered by Next.js, Supabase, Prisma, and Resend.",
+    "Enterprise-grade email automation, bulk recipient scheduler, image embedder, and lockable safety controls powered by Next.js, Supabase, and Resend.",
 };
 
 export default function RootLayout({
