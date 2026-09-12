@@ -56,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <h1 style={{ fontSize: "1.25rem", fontWeight: 800, letterSpacing: "-0.02em" }}>
-              AutoMail <span style={{ color: "var(--accent-primary)" }}>Flow</span>
+              Complaint<span style={{ color: "var(--accent-primary)" }}>Email</span>
             </h1>
             <span
               className={`badge ${isLiveMode ? "badge-success" : "badge-purple"}`}

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Monitor, Smartphone, CheckCircle, Code, Eye } from "lucide-react";
+import { resolveTemplateVariables } from "./EmailComposer";
 
 interface EmailPreviewProps {
   sender: string;
@@ -19,14 +20,21 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
   const [deviceView, setDeviceView] = useState<"desktop" | "mobile">("desktop");
   const [showRawCode, setShowRawCode] = useState(false);
 
+  // Dynamically resolve placeholders for preview rendering
+  const isNtc =
+    contentHtml.includes("National Telecommunications Commission") ||
+    recipients.some((r) => r.includes("ntc.gov.ph"));
+  const resolvedContentHtml = resolveTemplateVariables(contentHtml, { isNtcTemplate: isNtc });
+  const resolvedSubject = resolveTemplateVariables(subject, { isNtcTemplate: isNtc });
+
   // Fallback content if blank
   const displaySender = sender.trim() || "jeffdev2701@gmail.com";
   const displayRecipients =
     recipients.length > 0 ? recipients.join(", ") : "recipient@example.com";
-  const displaySubject = subject.trim() || "(No subject)";
+  const displaySubject = resolvedSubject.trim() || "(No subject)";
 
   // Check if content contains images
-  const hasImages = /<img[^>]+src="([^">]+)"/g.test(contentHtml);
+  const hasImages = /<img[^>]+src="([^">]+)"/g.test(resolvedContentHtml);
 
   // Wrap content inside a standard professional email template
   const wrappedEmailHtml = `
@@ -84,15 +92,15 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
         <div style="padding: 20px 10px;">
           <div class="email-wrapper">
             <div class="email-header">
-              <h2 style="margin: 0; font-size: 18px; font-weight: 700; color: #ffffff;">AutoMail Pro</h2>
-              <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9; color: #e0e7ff;">Official Notification</p>
+              <h2 style="margin: 0; font-size: 18px; font-weight: 700; color: #ffffff;">ComplaintEmail</h2>
+              <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9; color: #e0e7ff;">Formal Service Complaint & Dispatch</p>
             </div>
             <div class="email-body">
-              ${contentHtml || "<p style='color: #94a3b8; font-style: italic;'>Start typing in the composer to preview your email...</p>"}
+              ${resolvedContentHtml || "<p style='color: #94a3b8; font-style: italic;'>Start typing in the composer to preview your email...</p>"}
             </div>
             <div class="email-footer">
-              <p style="margin: 0 0 8px 0;">You received this email because you are registered with AutoMail Flow.</p>
-              <p style="margin: 0;">Sent by <strong>${displaySender}</strong> • <a href="#">Unsubscribe</a></p>
+              <p style="margin: 0 0 8px 0;">Official communication dispatched via ComplaintEmail System.</p>
+              <p style="margin: 0;">Sent by <strong>${displaySender}</strong></p>
             </div>
           </div>
         </div>

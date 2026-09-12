@@ -28,7 +28,7 @@ export default function DashboardPage() {
     process.env.NEXT_PUBLIC_DEFAULT_SENDER_EMAIL || "jeffdev2701@gmail.com"
   );
   const [recipientsRaw, setRecipientsRaw] = useState(
-    "jeffdev2701@gmail.com, partner@startup.io"
+    "help_alpha@s2sinternet.com, consumer@ntc.gov.ph"
   );
   const [subject, setSubject] = useState(
     "Automated System Update: New Feature Launch & Analytics"
