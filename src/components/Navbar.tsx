@@ -1,14 +1,22 @@
 "use client";
 
 import React from "react";
-import { Mail, Sparkles, ShieldCheck, User, LogOut, BookOpen, Clock } from "lucide-react";
+import {
+  Mail,
+  Sparkles,
+  ShieldCheck,
+  User,
+  LogOut,
+  Clock,
+  Lock,
+} from "lucide-react";
 import { MockUser } from "@/lib/supabase";
 
 interface NavbarProps {
   user: MockUser | null;
   onOpenAuth: () => void;
   onLogout: () => void;
-  onOpenGuide: () => void;
+  onLock?: () => void;
   stats: {
     totalSent: number;
     scheduledCount: number;
@@ -20,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   user,
   onOpenAuth,
   onLogout,
-  onOpenGuide,
+  onLock,
   stats,
   isLiveMode,
 }) => {
@@ -55,8 +63,15 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <h1 style={{ fontSize: "1.25rem", fontWeight: 800, letterSpacing: "-0.02em" }}>
-              Complaint<span style={{ color: "var(--accent-primary)" }}>Email</span>
+            <h1
+              style={{
+                fontSize: "1.25rem",
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Complaint
+              <span style={{ color: "var(--accent-primary)" }}>Email</span>
             </h1>
             <span
               className={`badge ${isLiveMode ? "badge-success" : "badge-purple"}`}
@@ -66,7 +81,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               {isLiveMode ? "Resend Live" : "Demo Engine"}
             </span>
           </div>
-          <p style={{ fontSize: "0.78125rem", color: "var(--text-muted)", marginTop: "1px" }}>
+          <p
+            style={{
+              fontSize: "0.78125rem",
+              color: "var(--text-muted)",
+              marginTop: "1px",
+            }}
+          >
             Automated & Bulk Email Delivery System
           </p>
         </div>
@@ -84,10 +105,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           border: "1px solid var(--border-subtle)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8125rem" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "0.8125rem",
+          }}
+        >
           <ShieldCheck size={15} color="var(--status-success)" />
           <span style={{ color: "var(--text-secondary)" }}>Sent:</span>
-          <strong style={{ color: "var(--text-primary)" }}>{stats.totalSent}</strong>
+          <strong style={{ color: "var(--text-primary)" }}>
+            {stats.totalSent}
+          </strong>
         </div>
         <div
           style={{
@@ -96,26 +126,37 @@ export const Navbar: React.FC<NavbarProps> = ({
             backgroundColor: "var(--border-subtle)",
           }}
         />
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.8125rem" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "0.8125rem",
+          }}
+        >
           <Clock size={14} color="var(--status-warning)" />
           <span style={{ color: "var(--text-secondary)" }}>Scheduled:</span>
-          <strong style={{ color: "var(--text-primary)" }}>{stats.scheduledCount}</strong>
+          <strong style={{ color: "var(--text-primary)" }}>
+            {stats.scheduledCount}
+          </strong>
         </div>
       </div>
 
-      {/* Right Actions: Setup Guide & Auth */}
+      {/* Right Actions: Lock Workspace & Auth */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <button
-          onClick={onOpenGuide}
-          className="btn btn-secondary"
-          style={{ fontSize: "0.8125rem", padding: "8px 14px" }}
-          title="Open Setup & API Keys Guide"
-        >
-          <BookOpen size={14} />
-          <span>Setup Guide</span>
-        </button>
+        {onLock && (
+          <button
+            onClick={onLock}
+            className="btn btn-outline"
+            style={{ fontSize: "0.8125rem", padding: "8px 12px", gap: "6px" }}
+            title="Lock workspace with welcome password"
+          >
+            <Lock size={14} />
+            <span>Lock</span>
+          </button>
+        )}
 
-        {user ? (
+        {/* {user ? (
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div
               style={{
@@ -164,7 +205,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <User size={14} />
             <span>Sign In</span>
           </button>
-        )}
+        )} */}
       </div>
     </header>
   );

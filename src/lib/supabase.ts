@@ -28,12 +28,3 @@ export interface MockUser {
   name?: string;
   isMock: boolean;
 }
-
-// Local mock auth store for out-of-the-box demo mode
-export const DEMO_DEFAULT_USER: MockUser = {
-  id: "demo-user-1",
-  email: "jeffdev2701@gmail.com",
-  username: "jeffdev",
-  name: "Jeff Developer",
-  isMock: true,
-};

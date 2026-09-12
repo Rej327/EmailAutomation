@@ -1,6 +1,6 @@
-# 📧 Email Automation & Bulk Sender Web App - Setup & User Guide
+# 📧 ComplaintEmail - Setup & User Guide
 
-Welcome to the **Email Automation & Bulk Sender** application. This project is built with **Next.js 15 (App Router, TypeScript)**, **Supabase** (Auth, Database & Storage), and **Resend** (Email Delivery), featuring automated timely scheduling, bulk email processing, image embedding, field-locking safety controls, and a modern dashboard.
+Welcome to the **ComplaintEmail** application. This project is built with **Next.js 15 (App Router, TypeScript)**, **Supabase** (Auth, Database & Storage), and **Resend** (Email Delivery), featuring automated timely scheduling, bulk email processing, image embedding, field-locking safety controls, and a modern dashboard.
 
 ---
 
@@ -135,6 +135,9 @@ Yes! When `RESEND_API_KEY` contains the default placeholder, the system runs in 
 
 **Q: Can I use a username instead of an email to log in?**  
 Yes! The authentication modal allows you to log in with a username and password. If an email is omitted, it automatically handles a dummy internal email (e.g. `username@app.local`) compatible with Supabase Auth.
+
+**Q: What is the default Welcome Password to unlock ComplaintEmail?**  
+The default security password is `Password@123`. Enter it into the Welcome Password prompt or click "Auto Fill" to unlock the workspace. You can re-lock the app at any time using the **Lock** button in the header.
 
 **Q: How do I unlock the form fields?**  
 Turn off the **Auto Send** switch. When the switch is deactivated, all form fields become fully editable.

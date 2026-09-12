@@ -17,8 +17,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onSuccess,
 }) => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [username, setUsername] = useState("jeffdev");
-  const [password, setPassword] = useState("password123");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +32,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }
 
     setIsLoading(true);
-    // If no email entered, generate dummy email matching user request: "email can be dummy"
+    // If no email entered, provide standard fallback email based on username
     const effectiveEmail = email.trim() || `${username.trim().toLowerCase()}@app.local`;
 
     try {
@@ -183,7 +183,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <input
                 type="text"
                 className="form-control"
-                placeholder="e.g. jeffdev"
+                placeholder="Enter username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 style={{ paddingLeft: "36px" }}
@@ -192,10 +192,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           </div>
 
-          {/* Optional Dummy Email */}
+          {/* Optional Email */}
           <div className="form-group">
             <label className="form-label">
-              <span>Email (Optional / Dummy)</span>
+              <span>Email (Optional)</span>
               <span className="label-tag">auto-filled if blank</span>
             </label>
             <div style={{ position: "relative" }}>
